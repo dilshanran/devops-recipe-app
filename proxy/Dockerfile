@@ -13,7 +13,7 @@ USER root
 
 RUN mkdir -p /vol/static && \
     mkdir -p /vol/media && \
-    chmod - R 755 /vol && \
+    chmod 755 /vol && \
     chown -R nginx:nginx /vol && \
     touch /etc/nginx/conf.d/default.conf && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \

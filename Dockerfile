@@ -39,6 +39,6 @@ ENV PATH="/scripts:/py/bin:$PATH"
 USER django-user
 
 VOLUME /vol/web/media
-VOLUME /vol/web/static 
+VOLUME /vol/web/static
 
 CMD ["run.sh"]

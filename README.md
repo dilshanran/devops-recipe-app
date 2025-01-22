@@ -41,6 +41,7 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 To clear all storage (including the database) and start fresh:
 
 ```sh
+docker compose -f docker-compose-deploy.yml down --volumes
 docker compose down --volumes
 docker compose up
 ```

@@ -13,7 +13,7 @@ jobs:
       DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   
-  deploy: # we need to AWS CLI to login ECR and push the image its install ubuntu-22.04
+  deploy: # we need to AWS CLI to login ECR and push the image its install ubuntu image
     name: Deploy
     runs-on: ubuntu-22.04
     needs: [test-lint]
@@ -27,7 +27,7 @@ jobs:
          else
            echo "staging" > .workspace
          fi
-      - name: Push to ECR # this run for push the image to ECR
+      - name: Push to ECR # this run for push the image to AWS ECR
         env:
           AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

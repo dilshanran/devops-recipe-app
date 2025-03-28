@@ -18,7 +18,7 @@ jobs:
       - name: login to Docker hub
         uses: docker/login-action@v3 # This is the action we are using to login to Docker Hub
         with:
-          username: ${{ vars.DOCKERHUB_USER }}
+          username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v4 # This is the action we are using to checkout the code
@@ -34,7 +34,7 @@ jobs:
       - name: login to Docker hub
         uses: docker/login-action@v3 # This is the action we are using to login to Docker Hub
         with:
-          username: ${{ vars.DOCKERHUB_USER }}
+          username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v4 # This is the action we are using to checkout the code

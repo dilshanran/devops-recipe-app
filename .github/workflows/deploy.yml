@@ -13,7 +13,7 @@ jobs:
       DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   
-  deploy: # we need to AWS CLI to login ECR and push the image its install ubuntu-22.04
+  deploy: # we need to AWS CLI to login ECR and push the image its install ubuntu
     name: Deploy
     runs-on: ubuntu-22.04
     needs: [test-lint]

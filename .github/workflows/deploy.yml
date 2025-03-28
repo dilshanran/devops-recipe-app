@@ -10,10 +10,17 @@ jobs:
     uses: ./.github/workflows/test-and-lint.yml # This is the action we are using to run the test and lint
     name: Test and Lint
     secrets: 
+<<<<<<< HEAD
       DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   
   deploy: # we need to AWS CLI to login ECR and push the image its install ubuntu image
+=======
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  
+  deploy: # we need to AWS CLI to login ECR and push the image its install ubuntu-22.04
+>>>>>>> d8281b00549cf9cf99b5e08af46940345ffa1b1e
     name: Deploy
     runs-on: ubuntu-22.04
     needs: [test-lint]
@@ -29,7 +36,11 @@ jobs:
          fi
       - name: Push to ECR # this run for push the image to ECR
         env:
+<<<<<<< HEAD
           AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+=======
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+>>>>>>> d8281b00549cf9cf99b5e08af46940345ffa1b1e
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com

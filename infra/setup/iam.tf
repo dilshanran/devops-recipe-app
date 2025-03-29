@@ -26,10 +26,15 @@ data "aws_iam_policy_document" "tf_backend" {
     ]
   }
 
-  statement {
+  # statement {
+  #   effect    = "Allow"
+  #   actions   = ["dynamodb:DescribeTable", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:GetItem", "dynamodb:UpdateItem"]
+  #   resources = ["arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"]
+  # }
+    statement {
     effect    = "Allow"
     actions   = ["dynamodb:DescribeTable", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:GetItem", "dynamodb:UpdateItem"]
-    resources = ["arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"]
+    resources = ["arn:aws:dynamodb:us-east-1:054037138496:table/devops-recipe-app-api-tflock"]
   }
 }
 

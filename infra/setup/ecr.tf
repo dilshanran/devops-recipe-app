@@ -1,10 +1,12 @@
 # Create ECR repository for docker images
+
 resource "aws_ecr_repository" "app" {
   name                 = "recipe-app-api-app"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 
   image_scanning_configuration {
+    #Note:update to true for real deployment
     scan_on_push = false
 
   }
@@ -16,6 +18,7 @@ resource "aws_ecr_repository" "proxy" {
   force_delete         = true
 
   image_scanning_configuration {
+    #Note:update to true for real deployment
     scan_on_push = false
 
   }

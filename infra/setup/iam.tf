@@ -2,7 +2,6 @@
 
 resource "aws_iam_user" "cd" {
   name = "recipe-app-api-cd"
-  path = "/system/"
 }
 
 resource "aws_iam_access_key" "cd" {
@@ -20,7 +19,7 @@ data "aws_iam_policy_document" "tf_backend" {
 
   statement {
     effect  = "Allow"
-    actions = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    actions = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket", "s3:HeadBucket"]
     resources = [
       "arn:aws:s3:::${var.tf_state_bucket}/tf-state-deploy/*",
       "arn:aws:s3:::${var.tf_state_bucket}/tf-state-deploy-env/*"
@@ -30,7 +29,7 @@ data "aws_iam_policy_document" "tf_backend" {
   statement {
     effect    = "Allow"
     actions   = ["dynamodb:DescribeTable", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:GetItem", "dynamodb:UpdateItem"]
-    resources = ["arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"]
+    resources = "arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"
   }
 }
 
@@ -47,9 +46,9 @@ resource "aws_iam_user_policy_attachment" "tf_backend" {
   policy_arn = aws_iam_policy.tf_backend.arn
 }
 
-#########################
+##############################
 # Policy for ECR access #
-#########################
+###############################
 
 data "aws_iam_policy_document" "ecr" {
   statement {

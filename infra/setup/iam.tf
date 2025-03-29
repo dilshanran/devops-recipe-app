@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "tf_backend" {
   statement {
     effect    = "Allow"
     actions   = ["dynamodb:DescribeTable", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:GetItem", "dynamodb:UpdateItem"]
-    resources = "arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"
+    resources = ["arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"]
   }
 }
 
@@ -46,9 +46,9 @@ resource "aws_iam_user_policy_attachment" "tf_backend" {
   policy_arn = aws_iam_policy.tf_backend.arn
 }
 
-##############################
+################################
 # Policy for ECR access #
-###############################
+#################################
 
 data "aws_iam_policy_document" "ecr" {
   statement {

@@ -48,7 +48,7 @@ resource "aws_iam_user_policy_attachment" "tf_backend" {
 
 #########################
 # Policy for ECR access #
-#########################
+##########################
 
 data "aws_iam_policy_document" "ecr" {
   statement {

@@ -13,4 +13,3 @@ services:
       - AWS_DEFAULT_REGION=us-east-1
       - TF_WORKSPACE=${TF_WORKSPACE}
       - TF_VAR_DB_PASSWORD=${TF_VAR_DB_PASSWORD}
-

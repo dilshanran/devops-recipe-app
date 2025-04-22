@@ -41,6 +41,7 @@ resource "aws_db_instance" "main" {
   username                   = var.db_username
   password                   = var.db_password
   db_subnet_group_name       = aws_db_subnet_group.main.name
+  skip_final_snapshot        = true
   multi_az                   = false
   backup_retention_period    = 0
   vpc_security_group_ids     = [aws_security_group.rds.id]

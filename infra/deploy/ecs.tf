@@ -36,7 +36,7 @@ resource "aws_iam_role_policy_attachment" "task_ssm_policy" {
 }
 
 resource "aws_cloudwatch_log_group" "ecs_task_logs" { # Log group for ECS task logs 
-  name= "${local.prefix}-api"  
+  name = "${local.prefix}-api"
 }
 
 resource "aws_ecs_cluster" "main" {
@@ -47,12 +47,49 @@ resource "aws_ecs_task_definition" "api" {
   family                   = "${local.prefix}-api"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"] # Fargate only 
-  cpu                     = "256"
-  memory                  = "512"
-  execution_role_arn      = aws_iam_role.task_execution_role.arn
-  task_role_arn           = aws_iam_role.app_task.arn
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.task_execution_role.arn
+  task_role_arn            = aws_iam_role.app_task.arn
 
-  container_definitions = jsonencode([])
+  container_definitions = jsonencode([
+    {
+      name              = "proxy"
+      image             = var.ecr_proxy_image
+      essential         = true
+      memoryReservation = 256
+      user              = "nginx"
+      portMappings = [
+        {
+          containerPort = 8000
+          hostPort      = 8000
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "APP_HOST"
+          value = "127.0.0.1"
+        }
+      ]
+      mountPoints = [
+        {
+          readOnly      = true
+          containerPath = "/vol/static"
+          sourceVolume  = "static"
+        }
+
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs_task_logs.name
+          "awslogs-region"        = data.aws_region.current.name
+          "awslogs-stream-prefix" = "proxy"
+        }
+      }
+    }
+  ])
 
   volume {
     name = "static"
@@ -62,5 +99,5 @@ resource "aws_ecs_task_definition" "api" {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
   }
-  
+
 }

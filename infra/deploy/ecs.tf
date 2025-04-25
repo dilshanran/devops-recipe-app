@@ -47,12 +47,68 @@ resource "aws_ecs_task_definition" "api" {
   family                   = "${local.prefix}-api"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"] # Fargate only 
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = 256
+  memory                   = 512
   execution_role_arn       = aws_iam_role.task_execution_role.arn
   task_role_arn            = aws_iam_role.app_task.arn
 
-  container_definitions = jsonencode([
+  #first container definition for api 
+  # this is the container that runs the django app
+  # it is the first container in the task definition
+
+  container_definitions = jsonencode(
+  [
+    {
+      name              = "api"
+      image             = var.ecr_app_image
+      essential         = true
+      memoryReservation = 256
+      user              = "django-user"
+
+      environment = [
+        {
+          name  = "DJANGO_SECRET_KEY"
+          value = var.django_secret_key
+        },
+        {
+          name  = "DB_HOST"
+          value = aws_db_instance.main.address
+        },
+        {
+          name  = "DB_NAME"
+          value = aws_db_instance.main.db_name
+        },
+        {
+          name  = "DB_USER"
+          value = aws_db_instance.main.username
+        },
+        {
+          name  = "DB_PASS"
+          value = aws_db_instance.main.password
+        },
+        {
+          name  = "ALLOWED_HOSTS"
+          value = "*"
+        }
+      ]
+      mountPoints = [
+        {
+          readOnly      = false
+          containerPath = "/vol/web/static"
+          sourceVolume  = "static"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_task_logs.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "api"
+        }
+      }
+    },
+
+    ### second container definition for proxy
     {
       name              = "proxy"
       image             = var.ecr_proxy_image
@@ -83,9 +139,9 @@ resource "aws_ecs_task_definition" "api" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.ecs_task_logs.name
-          "awslogs-region"        = data.aws_region.current.name
-          "awslogs-stream-prefix" = "proxy"
+          awslogs-group         = aws_cloudwatch_log_group.ecs_task_logs.name
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "proxy"
         }
       }
     }
@@ -100,4 +156,35 @@ resource "aws_ecs_task_definition" "api" {
     cpu_architecture        = "X86_64"
   }
 
+}
+resource "aws_security_group" "ecs_service" {
+  name        = "${local.prefix}-ecs-service"
+  description = "Allow traffic to ECS tasks"
+  vpc_id      = aws_vpc.main.id
+
+  #outbound access to endpoints
+
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  #RDS Connection for DB
+
+  egress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [aws_subnet.private_a.cidr_block, aws_subnet.private_b.cidr_block, ]
+  }
+
+  #HTTP inbound Connection
+  egress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }

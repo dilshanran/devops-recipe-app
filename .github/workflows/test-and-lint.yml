@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v4 # This is the action we are using to checkout the code
       - name: Terraform lint
         run: |
-          cd infra/        
+          cd infra/
           docker compose run --rm terraform -chdir=deploy/ init -backend=false
           docker compose run --rm terraform -chdir=setup/ init -backend=false
           docker compose run --rm terraform -chdir=setup/ validate

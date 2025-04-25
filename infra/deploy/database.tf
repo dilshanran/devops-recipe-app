@@ -22,6 +22,10 @@ resource "aws_security_group" "rds" {
     to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.main.cidr_block]
+
+    security_groups = [
+      aws_security_group.ecs_service.id, # Allow access from ECS service security group
+    ]
   }
   tags = {
     Name = "${local.prefix}-db-security-group"

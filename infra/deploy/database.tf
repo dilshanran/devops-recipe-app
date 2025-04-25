@@ -24,7 +24,7 @@ resource "aws_security_group" "rds" {
     cidr_blocks = [aws_vpc.main.cidr_block]
 
     security_groups = [
-      aws_security_group.ecs_service.id, # Allow access from ECS service security group
+      aws_security_group.ecs_service.id # Allow access from ECS service security group
     ]
   }
   tags = {
